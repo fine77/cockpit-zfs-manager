@@ -1,0 +1,16 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.nfs-page {
+  padding: 1rem;
+}
+
+pre {
+  background: #111;
+  color: #ddd;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow: auto;
+}

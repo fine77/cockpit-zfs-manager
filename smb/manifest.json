@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "smb",
+  "requires": {
+    "cockpit": "287"
+  },
+  "menu": {
+    "index": {
+      "label": "SMB"
+    }
+  },
+  "tools": {
+    "index": {
+      "label": "SMB"
+    }
+  }
+}

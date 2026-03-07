@@ -10,6 +10,18 @@ Use of this software is at your risk!
 
 This software has reached its end-of-life and is no longer maintained.
 
+## PlanetOnyx Continuation Scope
+
+This fork is being continued as a modular storage cockpit package with three
+workstreams:
+
+- `zfs` (existing module, compatibility hardening)
+- `nfs` (new module scaffold)
+- `smb` (new module scaffold)
+
+The immediate goal is to restore reliable operation on current Cockpit releases
+without breaking existing ZFS functionality.
+
 ## Requirements
 
  * Cockpit: 201+
