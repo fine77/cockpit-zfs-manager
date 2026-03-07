@@ -122,7 +122,7 @@ function Requirements(skip = { zfs: false }) {
                 if ($("#alerts-requirements").hasClass("hidden")) {
                     if (zfsmanager.configuration.samba.manage) {
                         FnSambaVersionGet()
-                            .done(function () {
+                            .always(function () {
                                 FnFirstSteps();
                             });
                     } else {
@@ -133,7 +133,7 @@ function Requirements(skip = { zfs: false }) {
     } else {
         if (zfsmanager.configuration.samba.manage) {
             FnSambaVersionGet()
-                .done(function () {
+                .always(function () {
                     FnFirstSteps();
                 });
         } else {
@@ -171,8 +171,8 @@ function FnFirstStepsPrivileged() {
         }
         if (zfsmanager.configuration.samba.manage) {
             FnSambaManage();
+            FnSambaUsersharesDirectoryCreate();
         }
-        FnSambaUsersharesDirectoryCreate();
         if (zfsmanager.configuration.updates.check) {
             FnUpdatesCheck({ alert: true });
         }
@@ -12414,19 +12414,21 @@ function FnSambaVersionGet() {
         .fail(function (message, data) {
             FnConsole.error("Samba, Version, Get: Failed, Message: " + (data ? data : message));
 
-            samba.message = `
-                    <div class="blank-slate-pf-icon">
-                        <i class="fa fa-exclamation-circle"></i>
-                    </div>
-                    <h1>This package requires Samba</h1>
-                    <p>Install Samba software via your package manager</p>
-                    <div class="blank-slate-pf-main-action">
-                        <button id="btn-alerts-requirements-samba-refresh" class="btn btn-primary btn-lg" tabIndex="-1">Refresh</button>
-                    </div>
-                `;
+            // Samba is optional. If unavailable, continue with ZFS/NFS features.
+            zfsmanager.configuration.samba.manage = false;
 
-            $("#alerts-requirements").removeClass("hidden").html(samba.message);
-            $("#container").addClass("hidden");
+            $("#alerts-requirements").empty().addClass("hidden");
+            $("#container").removeClass("hidden");
+
+            FnDisplayAlert(
+                {
+                    status: "warning",
+                    title: "Samba not available",
+                    description: "SMB management has been disabled. Install Samba to enable SMB features.",
+                    breakword: false
+                },
+                { name: "samba-optional-disabled", id: "global", timeout: 8 }
+            );
         });
 }
 
