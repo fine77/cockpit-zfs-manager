@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var MANAGED_FILE = "/etc/exports.d/cockpit-zfs-manager.exports";
+  var MANAGED_FILE = "/etc/exports";
   var managedRows = [];
 
   function escHtml(value) {
@@ -99,6 +99,16 @@
 
     lines.push("");
     return lines.join("\n");
+  }
+
+  function detectManagedFile() {
+    return cockpit.spawn(
+      ["bash", "-lc", "if [ -d /etc/exports.d ]; then echo /etc/exports.d/cockpit-zfs-manager.exports; else echo /etc/exports; fi"],
+      { superuser: "require" }
+    ).then(function (out) {
+      var value = (out || "").trim();
+      if (value) MANAGED_FILE = value;
+    });
   }
 
   function readManagedFile() {
@@ -221,5 +231,12 @@
   }
 
   installHandlers();
-  refreshAll();
+  detectManagedFile()
+    .then(function () {
+      return refreshAll();
+    })
+    .catch(function (err) {
+      setStatus("Managed file detection failed: " + err);
+      return refreshAll();
+    });
 }());
