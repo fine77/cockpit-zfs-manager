@@ -9,25 +9,70 @@
 </head>
 <body>
   <main class="nfs-page">
-    <h1>NFS Module (Foundation)</h1>
+    <h1>NFS Module</h1>
     <h2>NFs Export State Load</h2>
-    <p id="status">Loading current export state...</p>
-    <div class="table-wrap">
-      <table id="exports-table">
-        <thead>
-          <tr>
-            <th>Export Path</th>
-            <th>Client</th>
-            <th>Options</th>
-          </tr>
-        </thead>
-        <tbody id="exports-body">
-          <tr>
-            <td colspan="3">Loading...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <p id="status">Loading export data...</p>
+    <section class="panel">
+      <h3>Add Managed Export</h3>
+      <form id="add-form">
+        <label>
+          Path
+          <input id="new-path" type="text" placeholder="/srv/storage/share" required />
+        </label>
+        <label>
+          Client
+          <input id="new-client" type="text" placeholder="192.168.6.67" required />
+        </label>
+        <label>
+          Options
+          <input id="new-options" type="text" value="rw,sync,no_subtree_check" required />
+        </label>
+        <button type="submit">Add Row</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h3>Managed Exports (`/etc/exports.d/cockpit-zfs-manager.exports`)</h3>
+      <div class="actions">
+        <button id="btn-save">Save + Apply</button>
+        <button id="btn-refresh" type="button">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="managed-table">
+          <thead>
+            <tr>
+              <th>Export Path</th>
+              <th>Client</th>
+              <th>Options</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="managed-body">
+            <tr>
+              <td colspan="4">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <h3>Active Export State (`exportfs -s`)</h3>
+      <div class="table-wrap">
+        <table id="exports-table">
+          <thead>
+            <tr>
+              <th>Export Path</th>
+              <th>Client</th>
+              <th>Options</th>
+            </tr>
+          </thead>
+          <tbody id="exports-body">
+            <tr>
+              <td colspan="3">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
 </body>
 </html>

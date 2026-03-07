@@ -5,12 +5,69 @@ body {
 
 .nfs-page {
   padding: 1rem;
+  max-width: 1200px;
 }
 
-pre {
-  background: #111;
-  color: #ddd;
-  padding: 1rem;
-  border-radius: 6px;
+.panel {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  margin-top: 0.25rem;
+}
+
+#add-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+button {
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.table-wrap {
   overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.45rem 0.5rem;
+  vertical-align: top;
+}
+
+code {
+  font-size: 0.86rem;
+}
+
+@media (max-width: 900px) {
+  #add-form {
+    grid-template-columns: 1fr;
+  }
 }
