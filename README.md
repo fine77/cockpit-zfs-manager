@@ -6,10 +6,6 @@
 
 Use of this software is at your risk!
 
-## End-of-Life
-
-This software has reached its end-of-life and is no longer maintained.
-
 ## PlanetOnyx Continuation Scope
 
 This fork is being continued as a modular storage cockpit package with three
