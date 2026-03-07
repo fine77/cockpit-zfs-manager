@@ -22,6 +22,17 @@ workstreams:
 The immediate goal is to restore reliable operation on current Cockpit releases
 without breaking existing ZFS functionality.
 
+## Upstream Strategy (Active Base)
+
+This continuation now follows an upstream-first approach:
+
+- `45Drives/cockpit-file-sharing` as the active NFS/SMB reference base
+- `45Drives/cockpit-zfs-manager` as the maintained ZFS reference base
+
+The old EOL line remains only as compatibility fallback during transition.
+New work should prefer active upstream components and keep local glue code
+minimal and reviewable.
+
 ## Requirements
 
  * Cockpit: 201+

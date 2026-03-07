@@ -10,8 +10,24 @@
 <body>
   <main class="nfs-page">
     <h1>NFS Module (Foundation)</h1>
+    <h2>NFs Export State Load</h2>
     <p id="status">Loading current export state...</p>
-    <pre id="exports"></pre>
+    <div class="table-wrap">
+      <table id="exports-table">
+        <thead>
+          <tr>
+            <th>Export Path</th>
+            <th>Client</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody id="exports-body">
+          <tr>
+            <td colspan="3">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </main>
 </body>
 </html>
