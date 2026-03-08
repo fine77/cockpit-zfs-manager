@@ -67,3 +67,7 @@ sudo systemctl restart cockpit
 
 This is an alpha build. Some UI details and edge cases are still being refined.
 Use in controlled environments first.
+
+## Known Issues
+
+- See `docs/KNOWN-ISSUES.md` for the live alpha issue list and next fix queue.
