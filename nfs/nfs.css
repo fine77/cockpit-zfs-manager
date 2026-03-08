@@ -1,6 +1,27 @@
+:root {
+  --nfs-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+  --nfs-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #f5f5f5));
+  --nfs-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
+  --nfs-muted: var(--ct-color-label, var(--pf-global--Color--200, #6a6e73));
+  --nfs-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #d2d2d2));
+  --nfs-primary: var(--pf-v5-global--primary-color--100, var(--pf-global--primary-color--100, #06c));
+  --nfs-input-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+}
+
+html.pf-theme-dark {
+  --nfs-bg: #151515;
+  --nfs-bg-alt: #212427;
+  --nfs-text: #f0f0f0;
+  --nfs-muted: #b8bbbe;
+  --nfs-border: #3c3f42;
+  --nfs-input-bg: #1b1d21;
+}
+
 body {
-  font-family: sans-serif;
+  font-family: var(--pf-v5-global--FontFamily--sans-serif, var(--pf-global--FontFamily--sans-serif, sans-serif));
   margin: 0;
+  background: var(--nfs-bg);
+  color: var(--nfs-text);
 }
 
 .nfs-page {
@@ -9,10 +30,19 @@ body {
 }
 
 .panel {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--nfs-border);
   border-radius: 8px;
   padding: 0.9rem;
   margin-bottom: 1rem;
+  background: var(--nfs-bg-alt);
+}
+
+h1, h2, h3 {
+  color: var(--nfs-text);
+}
+
+#status {
+  color: var(--nfs-muted);
 }
 
 label {
@@ -26,6 +56,14 @@ input {
   box-sizing: border-box;
   padding: 0.45rem 0.55rem;
   margin-top: 0.25rem;
+  border: 1px solid var(--nfs-border);
+  background: var(--nfs-input-bg);
+  color: var(--nfs-text);
+}
+
+input:focus {
+  outline: 2px solid color-mix(in srgb, var(--nfs-primary) 40%, transparent);
+  outline-offset: 1px;
 }
 
 #add-form {
@@ -38,6 +76,14 @@ input {
 button {
   padding: 0.45rem 0.7rem;
   cursor: pointer;
+  border: 1px solid var(--nfs-border);
+  background: var(--nfs-bg);
+  color: var(--nfs-text);
+  border-radius: 4px;
+}
+
+button:hover {
+  border-color: var(--nfs-primary);
 }
 
 .actions {
@@ -57,13 +103,18 @@ table {
 
 th, td {
   text-align: left;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--nfs-border);
   padding: 0.45rem 0.5rem;
   vertical-align: top;
 }
 
+thead th {
+  color: var(--nfs-muted);
+}
+
 code {
   font-size: 0.86rem;
+  color: var(--nfs-text);
 }
 
 @media (max-width: 900px) {

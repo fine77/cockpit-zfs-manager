@@ -19,11 +19,29 @@
  -->
 
 
-<html>
+<html id="zfs-page">
 <head>
     <title translatable="no">Cockpit ZFS Manager</title>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script>
+      (function () {
+        function syncCockpitTheme() {
+          try {
+            var parentHtml = window.parent && window.parent.document && window.parent.document.documentElement;
+            if (!parentHtml) return;
+            var html = document.documentElement;
+            html.classList.toggle("pf-theme-dark", parentHtml.classList.contains("pf-theme-dark"));
+            html.classList.toggle("pf-theme-light", parentHtml.classList.contains("pf-theme-light"));
+          } catch (e) {
+            // ignore cross-frame issues
+          }
+        }
+        syncCockpitTheme();
+        window.addEventListener("load", syncCockpitTheme);
+        setInterval(syncCockpitTheme, 1500);
+      })();
+    </script>
 
     <link href="patternfly.min.css" rel="stylesheet" type="text/css">
     <link href="zfs.css" rel="stylesheet" type="text/css">
@@ -33,6 +51,7 @@
     <script src="../manifests.js"></script>
     <script src="../*/po.js"></script>
     <script src="zfs-additions.js"></script>
+    <script src="zfs-cockpit-compat.js"></script>
     <script nonce="1t55lZ7tzuKTreHVNwE66Ox32Mc=" src="zfs.js"></script>
 </head>
 <body class="pf-m-redhat-font">

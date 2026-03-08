@@ -1,13 +1,31 @@
 <!doctype html>
-<html>
+<html id="nfs-page">
 <head>
   <meta charset="utf-8">
   <title>Cockpit NFS Module</title>
+  <script>
+    (function () {
+      function syncCockpitTheme() {
+        try {
+          var parentHtml = window.parent && window.parent.document && window.parent.document.documentElement;
+          if (!parentHtml) return;
+          var html = document.documentElement;
+          html.classList.toggle("pf-theme-dark", parentHtml.classList.contains("pf-theme-dark"));
+          html.classList.toggle("pf-theme-light", parentHtml.classList.contains("pf-theme-light"));
+        } catch (e) {
+          // ignore cross-frame issues
+        }
+      }
+      syncCockpitTheme();
+      window.addEventListener("load", syncCockpitTheme);
+      setInterval(syncCockpitTheme, 1500);
+    })();
+  </script>
   <script src="../base1/cockpit.js"></script>
   <script src="nfs.js"></script>
   <link rel="stylesheet" href="nfs.css">
 </head>
-<body>
+<body class="pf-m-redhat-font pf-m-tabular-nums">
   <main class="nfs-page">
     <h1>NFS Module</h1>
     <h2>NFs Export State Load</h2>

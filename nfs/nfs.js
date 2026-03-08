@@ -3,6 +3,7 @@
 
   var MANAGED_FILE = "/etc/exports";
   var managedRows = [];
+  var activeRows = [];
 
   function escHtml(value) {
     return String(value || "")
@@ -16,6 +17,50 @@
   function setStatus(text) {
     var el = document.getElementById("status");
     if (el) el.textContent = text;
+  }
+
+  function getNfsServiceState() {
+    return cockpit.spawn(
+      [
+        "bash",
+        "-lc",
+        "(systemctl is-active nfs-server 2>/dev/null || systemctl is-active nfs-kernel-server 2>/dev/null || echo inactive) | head -n1"
+      ],
+      { superuser: "require" }
+    ).then(function (out) {
+      var state = String(out || "").trim();
+      return state || "inactive";
+    });
+  }
+
+  function ensureNfsServiceOnIfNeeded() {
+    var hasExports = (managedRows && managedRows.length > 0) || (activeRows && activeRows.length > 0);
+    if (!hasExports) return Promise.resolve("skipped");
+    return cockpit.spawn(
+      [
+        "bash",
+        "-lc",
+        "systemctl enable --now nfs-server 2>/dev/null || systemctl enable --now nfs-kernel-server 2>/dev/null || true"
+      ],
+      { superuser: "require" }
+    );
+  }
+
+  function syncZfsShareNfsFlags() {
+    if (!managedRows || !managedRows.length) return Promise.resolve();
+    var uniquePaths = {};
+    managedRows.forEach(function (r) {
+      if (r && r.path) uniquePaths[r.path] = true;
+    });
+    var script = Object.keys(uniquePaths).map(function (path) {
+      var escaped = String(path).replace(/'/g, "'\\''");
+      return (
+        "ds=$(zfs list -H -o name,mountpoint 2>/dev/null | awk -v p='" + escaped + "' '$2==p{print $1; exit}'); " +
+        "[ -n \"$ds\" ] && zfs set sharenfs=on \"$ds\" >/dev/null 2>&1 || true"
+      );
+    }).join("; ");
+    if (!script.trim()) return Promise.resolve();
+    return cockpit.spawn(["bash", "-lc", script], { superuser: "require" });
   }
 
   function parseExports(text) {
@@ -145,9 +190,11 @@
   function readActiveExports() {
     return cockpit.spawn(["bash", "-lc", "exportfs -s 2>/dev/null || cat /etc/exports 2>/dev/null || true"], { superuser: "require" })
       .then(function (out) {
-        renderActiveRows(parseExports(out || ""));
+        activeRows = parseExports(out || "");
+        renderActiveRows(activeRows);
       })
       .catch(function (err) {
+        activeRows = [];
         renderActiveRows([]);
         setStatus("Failed to read active export state: " + err);
       });
@@ -156,9 +203,23 @@
   function refreshAll() {
     setStatus("Refreshing export state...");
     return readManagedFile()
+      .then(syncZfsShareNfsFlags)
       .then(readActiveExports)
+      .then(ensureNfsServiceOnIfNeeded)
       .then(function () {
-        setStatus("NFS export state loaded.");
+        return getNfsServiceState();
+      })
+      .then(function (svcState) {
+        var on = svcState === "active";
+        setStatus(
+          "NFS Export State: " + (on ? "ON" : "OFF") +
+          " | Service=" + svcState +
+          " | Managed=" + managedRows.length +
+          " | Active=" + activeRows.length
+        );
+      })
+      .then(function () {
+        return null;
       })
       .catch(function (err) {
         setStatus("Refresh failed: " + err);
@@ -210,6 +271,9 @@
           .then(function () {
             setStatus("Applying NFS exports...");
             return reloadNfsExports();
+          })
+          .then(function () {
+            return syncZfsShareNfsFlags();
           })
           .then(function () {
             return refreshAll();

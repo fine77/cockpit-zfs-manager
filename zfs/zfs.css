@@ -829,10 +829,10 @@ tbody > tr.listing-ct-item-snapshots {
     --color-gray-11: #323232;
     --color-gray-12: #1e1e1e;
 
-    /* Semantic colors */
-    --color-fg: #151515;
-    --color-bg: #fff;
-    --color-text: var(--color-fg);
+    /* Semantic colors (bind to Cockpit theme) */
+    --color-fg: var(--ct-color-text, var(--pf-global--Color--100, #151515));
+    --color-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+    --color-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
 
     --color-link: #0066cc;
     --color-link-visited: #0066cc;
@@ -843,9 +843,9 @@ tbody > tr.listing-ct-item-snapshots {
     --color-link-hover-dark: #2b9af3;
     --color-link-focus-dark: #2b9af3;
 
-    --color-heading: #151515;
-    --color-heading-dark: #ffffff;
-    --color-body-copy: #151515;
+    --color-heading: var(--ct-color-text, #151515);
+    --color-heading-dark: var(--ct-color-text, #ffffff);
+    --color-body-copy: var(--ct-color-text, #151515);
     --color-body-copy-dark: #cccccc;
     --color-body-copy-dark-color: rbga(255,255,255,0.8);
     --color-subtle-copy: #72767b;
@@ -7164,4 +7164,59 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     height: 100%;
     padding: var(--pf-l-bullseye--Padding);
     margin: 0
+}
+
+/* Cockpit theme bridge: follow global Cockpit light/dark colors */
+:root {
+    --zfs-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+    --zfs-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #f5f5f5));
+    --zfs-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
+    --zfs-muted: var(--ct-color-label, var(--pf-global--Color--200, #6a6e73));
+    --zfs-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #d2d2d2));
+}
+
+html.pf-theme-dark {
+    --zfs-bg: #151515;
+    --zfs-bg-alt: #212427;
+    --zfs-text: #f0f0f0;
+    --zfs-muted: #b8bbbe;
+    --zfs-border: #3c3f42;
+}
+
+body {
+    background: var(--zfs-bg);
+    color: var(--zfs-text);
+}
+
+.ct-listing,
+.listing-ct,
+.listing-ct > tbody > tr,
+.panel,
+.modal-content {
+    background: var(--zfs-bg);
+    color: var(--zfs-text);
+}
+
+.ct-listing > header,
+.panel-heading,
+.listing-ct-head,
+.listing-ct-body,
+.table > thead > tr > th,
+.table > tbody > tr > td {
+    border-color: var(--zfs-border);
+}
+
+.text-muted,
+.table-ct-head,
+.modal-title,
+.listing-ct .listing-ct-body .listing-ct-head {
+    color: var(--zfs-muted) !important;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    background: var(--zfs-bg-alt);
+    color: var(--zfs-text);
+    border-color: var(--zfs-border);
 }
