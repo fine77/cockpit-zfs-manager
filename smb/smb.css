@@ -1,16 +1,225 @@
+:root {
+  --smb-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #151515));
+  --smb-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #212427));
+  --smb-text: var(--ct-color-text, var(--pf-global--Color--100, #f0f0f0));
+  --smb-muted: var(--ct-color-label, var(--pf-global--Color--200, #b8bbbe));
+  --smb-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #3c3f42));
+  --smb-primary: var(--pf-global--primary-color--100, #2b9af3);
+  --smb-radius: 8px;
+}
+
+:root.pf-theme-dark,
+:root.pf-v5-theme-dark,
+:root.ct-theme-dark {
+  --smb-bg: var(--pf-global--BackgroundColor--dark-100);
+  --smb-bg-alt: var(--pf-global--BackgroundColor--dark-200);
+  --smb-text: var(--pf-global--Color--light-100);
+  --smb-muted: var(--pf-global--Color--light-200);
+  --smb-border: var(--pf-global--BorderColor--100);
+}
+
+:root.pf-theme-light,
+:root.pf-v5-theme-light,
+:root.ct-theme-light {
+  --smb-bg: var(--pf-global--BackgroundColor--light-100);
+  --smb-bg-alt: var(--pf-global--BackgroundColor--light-200);
+  --smb-text: var(--pf-global--Color--dark-100);
+  --smb-muted: var(--pf-global--Color--dark-200);
+  --smb-border: var(--pf-global--BorderColor--100);
+}
+
 body {
-  font-family: sans-serif;
+  font-family: var(--pf-global--FontFamily--sans-serif, sans-serif);
   margin: 0;
+  color: var(--smb-text);
+  background: var(--smb-bg);
 }
 
 .smb-page {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
+  max-width: 1280px;
+}
+
+.smb-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--smb-border);
+}
+
+.status-wrap {
+  text-align: right;
+}
+
+.svc-badge {
+  display: inline-block;
+  border: 1px solid var(--smb-border);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.25rem;
+}
+
+h1, h2, h3 {
+  margin: 0 0 0.35rem;
+}
+h1 { font-size: 1.25rem; font-weight: 600; }
+h2 { font-size: 0.92rem; font-weight: 500; color: var(--smb-muted); margin-bottom: 0; }
+h3 { font-size: 1rem; font-weight: 600; }
+
+#status {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--smb-muted);
+}
+
+.panel {
+  border: 1px solid var(--smb-border);
+  border-radius: 8px;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+  background: color-mix(in srgb, var(--smb-bg) 84%, var(--smb-bg-alt) 16%);
+}
+
+#add-form {
+  display: grid;
+  grid-template-columns: 1.2fr 1.8fr 1.2fr repeat(3, auto) auto;
+  gap: 0.55rem;
+  align-items: end;
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+}
+
+label input[type="checkbox"] {
+  margin-right: 0.35rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--smb-border);
+  border-radius: 4px;
+  background: var(--smb-bg);
+  color: var(--smb-text);
+  padding: 0.45rem 0.55rem;
+  margin-top: 0.2rem;
+}
+
+button {
+  border: 1px solid var(--smb-border);
+  border-radius: 6px;
+  background: var(--smb-bg);
+  color: var(--smb-text);
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  transition: border-color .12s ease;
+}
+
+button:hover { border-color: var(--smb-primary); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.table-wrap { overflow: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td {
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--smb-border);
+  padding: 0.5rem 0.55rem;
+}
+thead th {
+  color: var(--smb-muted);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--smb-bg) 92%, var(--smb-text) 8%);
+}
+tbody tr:hover {
+  background: color-mix(in srgb, var(--smb-bg-alt) 70%, var(--smb-bg) 30%);
+}
+
+code {
+  font-size: 0.84rem;
+  color: var(--smb-text);
+}
+
+#shares-body td code {
+  color: var(--smb-text) !important;
+  background: color-mix(in srgb, var(--smb-bg) 74%, var(--smb-bg-alt) 26%) !important;
+  border: 1px solid var(--smb-border) !important;
+  border-radius: 4px;
+  padding: 0.12rem 0.35rem;
+  display: inline-block;
+  line-height: 1.25;
 }
 
 pre {
-  background: #111;
-  color: #ddd;
-  padding: 1rem;
+  margin: 0;
+  border: 1px solid var(--smb-border);
   border-radius: 6px;
+  background: var(--smb-bg);
+  color: var(--smb-text);
+  padding: 0.8rem;
   overflow: auto;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1200px) {
+  #add-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Cockpit hard-overrides: keep module in host theme */
+html#smb-page,
+html#smb-page body {
+  background: var(--smb-bg) !important;
+  color: var(--smb-text) !important;
+}
+
+html#smb-page .smb-page,
+html#smb-page .panel,
+html#smb-page .table-wrap,
+html#smb-page pre {
+  background: var(--smb-bg-alt) !important;
+  color: var(--smb-text) !important;
+  border-color: var(--smb-border) !important;
+}
+
+html#smb-page table,
+html#smb-page thead,
+html#smb-page tbody,
+html#smb-page tr,
+html#smb-page th,
+html#smb-page td {
+  background-color: transparent !important;
+  color: var(--smb-text) !important;
+  border-color: var(--smb-border) !important;
+}
+
+html#smb-page thead th {
+  background-color: color-mix(in srgb, var(--smb-bg-alt) 88%, var(--smb-text) 12%) !important;
+  color: var(--smb-muted) !important;
+}
+
+html#smb-page tbody tr:hover td {
+  background-color: color-mix(in srgb, var(--smb-bg-alt) 72%, var(--smb-bg) 28%) !important;
+}
+
+html#smb-page button,
+html#smb-page input,
+html#smb-page select,
+html#smb-page textarea {
+  background: var(--smb-bg) !important;
+  color: var(--smb-text) !important;
+  border-color: var(--smb-border) !important;
 }

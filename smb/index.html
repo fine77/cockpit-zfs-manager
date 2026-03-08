@@ -1,17 +1,79 @@
 <!doctype html>
-<html>
+<html id="smb-page">
 <head>
   <meta charset="utf-8">
   <title>Cockpit SMB Module</title>
+  <script src="theme.js"></script>
   <script src="../base1/cockpit.js"></script>
   <script src="smb.js"></script>
+  <link rel="stylesheet" href="../zfs/patternfly.min.css">
   <link rel="stylesheet" href="smb.css">
 </head>
-<body>
+<body class="pf-m-redhat-font pf-m-tabular-nums">
   <main class="smb-page">
-    <h1>SMB Module (Foundation)</h1>
-    <p id="status">Loading share state...</p>
-    <pre id="shares"></pre>
+    <header class="smb-header">
+      <div>
+        <h1>SMB Module</h1>
+        <h2>Managed Shares · build 20260308-4</h2>
+      </div>
+      <div class="status-wrap">
+        <span id="svc-badge" class="svc-badge">Service: -</span>
+        <p id="status">Loading share state...</p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h3>Add Managed Share</h3>
+      <form id="add-form">
+        <label>Share Name<input id="new-name" type="text" placeholder="documents" required /></label>
+        <label>Path<input id="new-path" type="text" placeholder="/srv/storage/documents" required /></label>
+        <label>Valid Users<input id="new-users" type="text" placeholder="manager @users" /></label>
+        <label><input id="new-readonly" type="checkbox" /> Read only</label>
+        <label><input id="new-browseable" type="checkbox" checked /> Browseable</label>
+        <label><input id="new-guestok" type="checkbox" /> Guest ok</label>
+        <button type="submit">Add Share</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h3>Managed SMB Shares</h3>
+      <div class="actions">
+        <button id="btn-save">Save + Apply</button>
+        <button id="btn-enable" type="button">Enable Service</button>
+        <button id="btn-disable" type="button">Disable Service</button>
+        <button id="btn-restart" type="button">Restart Service</button>
+        <button id="btn-refresh" type="button">Refresh</button>
+      </div>
+      <label>
+        Search
+        <input id="search" type="text" placeholder="Filter name/path/users" />
+      </label>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Path</th>
+              <th>Flags</th>
+              <th>Users</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="shares-body">
+            <tr><td colspan="5">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Active Share State</h3>
+      <pre id="shares"></pre>
+    </section>
+    <section class="panel">
+      <h3>Action Log</h3>
+      <pre id="action-log">No actions yet.</pre>
+    </section>
   </main>
 </body>
 </html>

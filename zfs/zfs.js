@@ -9961,7 +9961,9 @@ function FnStatusErrorColors(status = { count }) {
 
 function FnStatusGet(pool = { name, id }) {
     let process = {
-        command: ["/bin/sh", "-c", ((zfsmanager.user.name == "root" || !zfsmanager.user.name) ? "ZPOOL_SCRIPTS_AS_ROOT=1 " : "") + `/sbin/zpool status -p -t -c upath "` + pool.name + `"`]
+        command: ["/bin/sh", "-c", ((zfsmanager.user.name == "root" || !zfsmanager.user.name) ? "ZPOOL_SCRIPTS_AS_ROOT=1 " : "") + `/sbin/zpool status -p -t -c upath "` + pool.name + `"`],
+        commandiostat: ["/bin/sh", "-c", ((zfsmanager.user.name == "root" || !zfsmanager.user.name) ? "ZPOOL_SCRIPTS_AS_ROOT=1 " : "") + `/sbin/zpool iostat -H -p -v "` + pool.name + `" 2>/dev/null`],
+        commandsmart: ["/bin/sh", "-c", "/bin/lsblk -dn -o NAME,TYPE 2>/dev/null | /bin/awk '$2==\"disk\"{print \"/dev/\"$1}' | while read -r d; do echo \"###DISK:${d}\"; /usr/sbin/smartctl -i \"$d\" 2>/dev/null; done"]
     };
 
     pool.autotrim = ($("#tr-storagepool-" + pool.id).attr("data-pool-autotrim") == "true" ? true : false);
@@ -9998,7 +10000,23 @@ function FnStatusGet(pool = { name, id }) {
                             lsblkjson: JSON.parse(_data)
                         };
 
-                        FnStatusGetCommand({ name: pool.name, id: pool.id, autotrim: pool.autotrim, boot: pool.boot, feature: { allocation_classes: pool.feature.allocation_classes, device_removal: pool.feature.device_removal, resilver_defer: pool.feature.resilver_defer }, guid: pool.guid, readonly: pool.readonly, root: pool.root, upgrade: pool.upgrade, version: pool.version }, { lsblk: disks.lsblkjson }, { data: data, message: message });
+                        let statusWithDisks = function (_iostat) {
+                            cockpit.spawn(process.commandsmart, { err: "out" })
+                                .done(function (_smart) {
+                                    FnStatusGetCommand({ name: pool.name, id: pool.id, autotrim: pool.autotrim, boot: pool.boot, feature: { allocation_classes: pool.feature.allocation_classes, device_removal: pool.feature.device_removal, resilver_defer: pool.feature.resilver_defer }, guid: pool.guid, readonly: pool.readonly, root: pool.root, upgrade: pool.upgrade, version: pool.version }, { lsblk: disks.lsblkjson, smart: _smart }, { data: data, iostat: _iostat, message: message });
+                                })
+                                .fail(function () {
+                                    FnStatusGetCommand({ name: pool.name, id: pool.id, autotrim: pool.autotrim, boot: pool.boot, feature: { allocation_classes: pool.feature.allocation_classes, device_removal: pool.feature.device_removal, resilver_defer: pool.feature.resilver_defer }, guid: pool.guid, readonly: pool.readonly, root: pool.root, upgrade: pool.upgrade, version: pool.version }, { lsblk: disks.lsblkjson, smart: "" }, { data: data, iostat: _iostat, message: message });
+                                });
+                        };
+
+                        cockpit.spawn(process.commandiostat, { err: "out" })
+                            .done(function (_iostat) {
+                                statusWithDisks(_iostat);
+                            })
+                            .fail(function () {
+                                statusWithDisks("");
+                            });
                     }
 
                     FnConsole.log[1]("Status, Get: Success, Pool: " + pool.name);
@@ -10034,7 +10052,7 @@ function FnStatusGet(pool = { name, id }) {
         });
 }
 
-function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, feature: { allocation_classes: true, device_removal: true, resilver_defer: true }, guid, readonly: false, root: false, upgrade: false, version }, disks = { lsblk: {} }, process = { data, message }) {
+function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, feature: { allocation_classes: true, device_removal: true, resilver_defer: true }, guid, readonly: false, root: false, upgrade: false, version }, disks = { lsblk: {}, smart: "" }, process = { data, message }) {
     process.data = process.data.replace(/\n\t+/g, "[TAB1]").split(/\n/g).filter(v => v); //Replace new line with [TAB1] for multi line messages and config
 
     pool.status = {
@@ -10061,12 +10079,14 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
         disks: {
             count: 0,
             ssd: false,
+            firmware: {},
             trim: {
                 unsupportedcount: 0
             }
         },
         config: {
             items: [],
+            iostat: {},
             regexp: {},
             replacement: {},
             tier: {
@@ -10081,6 +10101,93 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
             }
         }
     };
+
+    // Parse zpool iostat (-H -p -v) and map read/write ops by name/path.
+    if (process.iostat) {
+        process.iostat.split(/\n/g).forEach((_line) => {
+            let line = (_line || "").trim();
+
+            if (!line || /^capacity\b|^pool\b|^alloc\b|^\-+/i.test(line)) {
+                return;
+            }
+
+            let cols = line.split(/\s+/).filter(v => v);
+            if (cols.length < 3) {
+                return;
+            }
+
+            let name = cols[0];
+            let nums = cols.slice(1).filter(v => /^\d+$/.test(v));
+            if (nums.length < 2) {
+                return;
+            }
+
+            let readOps = (nums.length >= 6 ? nums[2] : nums[nums.length - 2]);
+            let writeOps = (nums.length >= 6 ? nums[3] : nums[nums.length - 1]);
+
+            [name, name.replace(/^\/dev\//, "")].forEach((k) => {
+                if (k) {
+                    pool.status.config.iostat[k] = {
+                        read: readOps,
+                        write: writeOps
+                    };
+                }
+            });
+        });
+    }
+
+    // Parse smartctl -i output grouped by marker ###DISK:/dev/sdX
+    if (disks.smart) {
+        let currentDisk = "";
+
+        disks.smart.split(/\n/g).forEach((_line) => {
+            let line = (_line || "").trim();
+
+            if (!line) {
+                return;
+            }
+
+            if (/^###DISK:/i.test(line)) {
+                currentDisk = line.replace(/^###DISK:/i, "").trim();
+                if (currentDisk && !pool.status.disks.firmware[currentDisk]) {
+                    pool.status.disks.firmware[currentDisk] = { model: "", serial: "", firmware: "", capacity: "" };
+                    pool.status.disks.firmware[currentDisk.replace(/^\/dev\//, "")] = pool.status.disks.firmware[currentDisk];
+                }
+                return;
+            }
+
+            if (!currentDisk || !pool.status.disks.firmware[currentDisk]) {
+                return;
+            }
+
+            let fw = pool.status.disks.firmware[currentDisk];
+            let m = null;
+
+            m = line.match(/^(Device Model|Model Number|Product):\s*(.+)$/i);
+            if (m) {
+                fw.model = m[2].trim();
+                return;
+            }
+
+            m = line.match(/^Serial Number:\s*(.+)$/i);
+            if (m) {
+                fw.serial = m[1].trim();
+                return;
+            }
+
+            m = line.match(/^Firmware Version:\s*(.+)$/i);
+            if (m) {
+                fw.firmware = m[1].trim();
+                return;
+            }
+
+            m = line.match(/^User Capacity:\s*(.+)$/i);
+            if (m) {
+                fw.capacity = m[1].trim();
+                return;
+            }
+        });
+    }
 
     $("#modals-storagepool-status-" + pool.id).remove();
     $("#modals").append(`<div id="modals-storagepool-status-` + pool.id + `"></div>`);
@@ -10321,30 +10428,49 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
         pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + (pool.status.config.tier.virtualdevice ? `-virtualdevice` : ``) + `" colspan="3"><span class="table-ct-head">` + (pool.status.config.tier.level == 0 && pool.status.config.tier.count == 1 && _value[0] == pool.name ? `Pool` : (pool.status.config.disk ? `Disk` : `Virtual Device`)) + `:</span>` + _value[0] + `</td>`; //Pool / Virtual Device / Disk
         pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `"><span class="table-ct-head">State:</span>` + (_value[1] ? `<span class="` + FnStoragePoolHealthIcon({ health: _value[1] }) + `"></span> ` + _value[1] : ``) + `</td>`; //State
 
-        if (_value[2] && /^spares/g.test(pool.status.config.tier.nametier0)) { //Read
-            pool.status.disks.disk.messages.push(_value[2]);
+        let rowRead = (_value[2] ? _value[2] : "");
+        let rowWrite = (_value[3] ? _value[3] : "");
+        let rowChecksum = (_value[4] ? _value[4] : "0");
 
-            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub-hidden"></td>`;
-        } else {
-            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (_value[2] ? `<span class="table-ct-head">Read:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: _value[2] }) : _value[2]) : ``) + `</td>`;
+        let ioKeys = [pool.status.disks.disk.upath, _value[0], (_value[0] ? _value[0].replace(/^\/dev\//, "") : "")].filter(v => v);
+        for (let i = 0; i < ioKeys.length; i++) {
+            if (pool.status.config.iostat[ioKeys[i]]) {
+                if (!rowRead || rowRead === "0") {
+                    rowRead = pool.status.config.iostat[ioKeys[i]].read;
+                }
+
+                if (!rowWrite || rowWrite === "0") {
+                    rowWrite = pool.status.config.iostat[ioKeys[i]].write;
+                }
+
+                break;
+            }
         }
 
-        if (_value[3] && /^spares/g.test(pool.status.config.tier.nametier0)) { //Write
-            pool.status.disks.disk.messages.push(_value[3]);
+        if (rowRead && /^spares/g.test(pool.status.config.tier.nametier0)) { //Read
+            pool.status.disks.disk.messages.push(rowRead);
 
             pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub-hidden"></td>`;
         } else {
-            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (_value[3] ? `<span class="table-ct-head">Write:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: _value[3] }) : _value[3]) : ``) + `</td>`;
+            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (rowRead ? `<span class="table-ct-head">Read:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: rowRead }) : rowRead) : ``) + `</td>`;
+        }
+
+        if (rowWrite && /^spares/g.test(pool.status.config.tier.nametier0)) { //Write
+            pool.status.disks.disk.messages.push(rowWrite);
+
+            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub-hidden"></td>`;
+        } else {
+            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (rowWrite ? `<span class="table-ct-head">Write:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: rowWrite }) : rowWrite) : ``) + `</td>`;
         }
 
         if (/^spares/g.test(pool.status.config.tier.nametier0)) { //Checksum
-            if (_value[4]) {
-                pool.status.disks.disk.messages.push(_value[4]);
+            if (rowChecksum) {
+                pool.status.disks.disk.messages.push(rowChecksum);
             }
 
             pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub-hidden"></td>`;
         } else {
-            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (_value[4] ? `<span class="table-ct-head">Checksum:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: _value[4] }) : _value[4]) : ``) + `</td>`;
+            pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `">` + (rowChecksum ? `<span class="table-ct-head">Checksum:</span>` + (zfsmanager.configuration.zfs.status.errorcolors ? FnStatusErrorColors({ count: rowChecksum }) : rowChecksum) : ``) + `</td>`;
         }
 
         for (let i = 5; i < _value.length; i++) { //Collect messages
@@ -10353,7 +10479,10 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
             }
         }
 
-        pool.status.disks.disk.messages = pool.status.disks.disk.messages.join(" "); //Join Messages for output
+        pool.status.disks.disk.messages = pool.status.disks.disk.messages.join(" ").trim(); //Join Messages for output
+        if (!pool.status.disks.disk.messages) {
+            pool.status.disks.disk.messages = "-";
+        }
 
         if (pool.status.config.disk && /\(trim unsupported\)/gi.test(pool.status.disks.disk.messages)) {
             pool.status.disks.disk.trim.unsupported = true;
@@ -10395,10 +10524,14 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
 
         pool.status.config.output += `<td class="config-level-` + pool.status.config.tier.level + `-sub` + (pool.status.config.tier.virtualdevice ? `-hidden` : ``) + `" colspan="3"><span class="table-ct-head">Product:</span>`; //Product
 
+        let productText = "";
+
         if (pool.status.config.disk) {
             disks.lsblk.blockdevices.forEach((__value, __index) => {
                 if (__value.type == "disk") {
-                    if (pool.status.disks.disk.upath.replace(/^\/dev\//gi, "") == __value.name || "nvme-" + __value.wwn == _value[0] || "wwn-" + __value.wwn == _value[0]) {
+                    let upathName = pool.status.disks.disk.upath.replace(/^\/dev\//gi, "");
+                    let upathDisk = upathName.replace(/p?[0-9]+$/g, "");
+                    if (upathName == __value.name || upathDisk == __value.name || "nvme-" + __value.wwn == _value[0] || "wwn-" + __value.wwn == _value[0]) {
                         if (__value.rota == 0 || __value.rota === "false") {
                             pool.status.disks.disk.ssd = true;
 
@@ -10407,12 +10540,36 @@ function FnStatusGetCommand(pool = { name, id, autotrim: false, boot: false, fea
                             }
                         }
 
-                        pool.status.config.output += FnFormatBytes({ base2: zfsmanager.configuration.disks.base2, decimals: 2, value: __value.size }) + " " + __value.model + (__value.serial ? " (" + __value.serial + ")" : "");
+                        if (!productText) {
+                            productText = FnFormatBytes({ base2: zfsmanager.configuration.disks.base2, decimals: 2, value: __value.size }) + " " + __value.model + (__value.serial ? " (" + __value.serial + ")" : "");
+                        }
                     }
                 }
             });
+
+            let firmware = null;
+            let fwKeys = [
+                pool.status.disks.disk.upath,
+                pool.status.disks.disk.upath.replace(/^\/dev\//gi, ""),
+                _value[0],
+                (_value[0] ? _value[0].replace(/^\/dev\//gi, "") : "")
+            ].filter(v => v);
+
+            fwKeys.forEach((_k) => {
+                if (!firmware && pool.status.disks.firmware[_k]) {
+                    firmware = pool.status.disks.firmware[_k];
+                }
+            });
+
+            if (firmware && firmware.model) {
+                productText = firmware.model.trim();
+            }
         }
 
+        if (!productText && pool.status.disks.disk.upath) {
+            productText = pool.status.disks.disk.upath.replace(/^\/dev\//gi, "").replace(/p?[0-9]+$/g, "");
+        }
+        pool.status.config.output += (productText ? productText : "-");
         pool.status.config.output += `</td>`;
 
         //Actions Menu

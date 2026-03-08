@@ -18,31 +18,12 @@
  * with Cockpit ZFS Manager; If not, see <http://www.gnu.org/licenses/>.
  -->
 
-
 <html id="zfs-page">
 <head>
     <title translatable="no">Cockpit ZFS Manager</title>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <script>
-      (function () {
-        function syncCockpitTheme() {
-          try {
-            var parentHtml = window.parent && window.parent.document && window.parent.document.documentElement;
-            if (!parentHtml) return;
-            var html = document.documentElement;
-            html.classList.toggle("pf-theme-dark", parentHtml.classList.contains("pf-theme-dark"));
-            html.classList.toggle("pf-theme-light", parentHtml.classList.contains("pf-theme-light"));
-          } catch (e) {
-            // ignore cross-frame issues
-          }
-        }
-        syncCockpitTheme();
-        window.addEventListener("load", syncCockpitTheme);
-        setInterval(syncCockpitTheme, 1500);
-      })();
-    </script>
-
+    <script src="theme.js"></script>
     <link href="patternfly.min.css" rel="stylesheet" type="text/css">
     <link href="zfs.css" rel="stylesheet" type="text/css">
 
@@ -53,8 +34,9 @@
     <script src="zfs-additions.js"></script>
     <script src="zfs-cockpit-compat.js"></script>
     <script nonce="1t55lZ7tzuKTreHVNwE66Ox32Mc=" src="zfs.js"></script>
+    <script src="zfs-ui-enhance.js"></script>
 </head>
-<body class="pf-m-redhat-font">
+<body class="pf-m-redhat-font pf-m-tabular-nums">
     <div id="alerts-requirements" class="blank-slate-pf blank-slate-ct hidden"></div>
     <div id="container" class="container-fluid hidden">
         <ul id="alerts-notifications" class="pf-c-alert-group pf-m-toast"></ul>
@@ -62,7 +44,7 @@
         <div>
             <section class="ct-listing">
                 <header>
-                    <h3 class="listing-ct-heading">Storage Pools</h3>
+                    <h3 class="listing-ct-heading">Storage Pools · build 20260308-10</h3>
                     <div class="listing-ct-actions">
                         <div class="pull-right">
                             <button id="btn-storagepools-create" class="btn btn-primary" data-toggle="modal" data-target="#modal-storagepools-create" tabIndex="-1" type="button">Create Storage Pool</button>

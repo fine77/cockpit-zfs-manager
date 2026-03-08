@@ -3,33 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>Cockpit NFS Module</title>
-  <script>
-    (function () {
-      function syncCockpitTheme() {
-        try {
-          var parentHtml = window.parent && window.parent.document && window.parent.document.documentElement;
-          if (!parentHtml) return;
-          var html = document.documentElement;
-          html.classList.toggle("pf-theme-dark", parentHtml.classList.contains("pf-theme-dark"));
-          html.classList.toggle("pf-theme-light", parentHtml.classList.contains("pf-theme-light"));
-        } catch (e) {
-          // ignore cross-frame issues
-        }
-      }
-      syncCockpitTheme();
-      window.addEventListener("load", syncCockpitTheme);
-      setInterval(syncCockpitTheme, 1500);
-    })();
-  </script>
+  <script src="theme.js"></script>
   <script src="../base1/cockpit.js"></script>
   <script src="nfs.js"></script>
+  <link rel="stylesheet" href="../zfs/patternfly.min.css">
   <link rel="stylesheet" href="nfs.css">
 </head>
 <body class="pf-m-redhat-font pf-m-tabular-nums">
   <main class="nfs-page">
-    <h1>NFS Module</h1>
-    <h2>NFs Export State Load</h2>
-    <p id="status">Loading export data...</p>
+    <header class="nfs-header">
+      <div>
+        <h1>NFS Module</h1>
+        <h2>NFS Export State · build 20260308-6</h2>
+      </div>
+      <div class="status-wrap">
+        <span id="svc-badge" class="svc-badge">Service: -</span>
+        <p id="status">Loading export data...</p>
+      </div>
+    </header>
     <section class="panel">
       <h3>Add Managed Export</h3>
       <form id="add-form">
@@ -52,8 +43,17 @@
       <h3>Managed Exports (auto: `/etc/exports.d/...` or `/etc/exports`)</h3>
       <div class="actions">
         <button id="btn-save">Save + Apply</button>
+        <button id="btn-nfs-enable" type="button">Enable Service</button>
+        <button id="btn-nfs-disable" type="button">Disable Service</button>
+        <button id="btn-nfs-restart" type="button">Restart Service</button>
+        <button id="btn-validate" type="button">Validate Config</button>
+        <button id="btn-backup" type="button">Backup Config</button>
         <button id="btn-refresh" type="button">Refresh</button>
       </div>
+      <label>
+        Search
+        <input id="search" type="text" placeholder="Filter path/client/options" />
+      </label>
       <div class="table-wrap">
         <table id="managed-table">
           <thead>
@@ -61,7 +61,7 @@
               <th>Export Path</th>
               <th>Client</th>
               <th>Options</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="managed-body">
@@ -90,6 +90,10 @@
           </tbody>
         </table>
       </div>
+    </section>
+    <section class="panel">
+      <h3>Action Log</h3>
+      <pre id="action-log">No actions yet.</pre>
     </section>
   </main>
 </body>

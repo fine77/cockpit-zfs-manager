@@ -1,20 +1,33 @@
 :root {
-  --nfs-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
-  --nfs-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #f5f5f5));
-  --nfs-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
-  --nfs-muted: var(--ct-color-label, var(--pf-global--Color--200, #6a6e73));
-  --nfs-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #d2d2d2));
-  --nfs-primary: var(--pf-v5-global--primary-color--100, var(--pf-global--primary-color--100, #06c));
-  --nfs-input-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+  --nfs-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #151515));
+  --nfs-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #212427));
+  --nfs-text: var(--ct-color-text, var(--pf-global--Color--100, #f0f0f0));
+  --nfs-muted: var(--ct-color-label, var(--pf-global--Color--200, #b8bbbe));
+  --nfs-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #3c3f42));
+  --nfs-primary: var(--pf-global--primary-color--100, #2b9af3);
+  --nfs-input-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #151515));
+  --nfs-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --nfs-radius: 6px;
 }
 
-html.pf-theme-dark {
-  --nfs-bg: #151515;
-  --nfs-bg-alt: #212427;
-  --nfs-text: #f0f0f0;
-  --nfs-muted: #b8bbbe;
-  --nfs-border: #3c3f42;
-  --nfs-input-bg: #1b1d21;
+:root.pf-theme-dark,
+:root.pf-v5-theme-dark,
+:root.ct-theme-dark {
+  --nfs-bg: var(--pf-global--BackgroundColor--dark-100);
+  --nfs-bg-alt: var(--pf-global--BackgroundColor--dark-200);
+  --nfs-text: var(--pf-global--Color--light-100);
+  --nfs-muted: var(--pf-global--Color--light-200);
+  --nfs-border: var(--pf-global--BorderColor--100);
+}
+
+:root.pf-theme-light,
+:root.pf-v5-theme-light,
+:root.ct-theme-light {
+  --nfs-bg: var(--pf-global--BackgroundColor--light-100);
+  --nfs-bg-alt: var(--pf-global--BackgroundColor--light-200);
+  --nfs-text: var(--pf-global--Color--dark-100);
+  --nfs-muted: var(--pf-global--Color--dark-200);
+  --nfs-border: var(--pf-global--BorderColor--100);
 }
 
 body {
@@ -25,8 +38,18 @@ body {
 }
 
 .nfs-page {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   max-width: 1200px;
+}
+
+.nfs-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--nfs-border);
 }
 
 .panel {
@@ -34,15 +57,45 @@ body {
   border-radius: 8px;
   padding: 0.9rem;
   margin-bottom: 1rem;
-  background: var(--nfs-bg-alt);
+  background: color-mix(in srgb, var(--nfs-bg) 84%, var(--nfs-bg-alt) 16%);
+  box-shadow: var(--nfs-shadow);
+}
+
+.status-wrap {
+  text-align: right;
+}
+
+.svc-badge {
+  display: inline-block;
+  border: 1px solid var(--nfs-border);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.25rem;
 }
 
 h1, h2, h3 {
   color: var(--nfs-text);
+  margin: 0 0 0.45rem;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.25rem;
+}
+
+h2 {
+  color: var(--nfs-muted);
+  font-size: 0.92rem;
+  font-weight: 500;
+  margin-bottom: 0;
 }
 
 #status {
   color: var(--nfs-muted);
+  margin: 0;
+  font-size: 0.86rem;
+  white-space: nowrap;
 }
 
 label {
@@ -59,6 +112,19 @@ input {
   border: 1px solid var(--nfs-border);
   background: var(--nfs-input-bg);
   color: var(--nfs-text);
+  border-radius: 4px;
+}
+
+pre {
+  margin: 0;
+  border: 1px solid var(--nfs-border);
+  border-radius: 6px;
+  background: var(--nfs-bg);
+  color: var(--nfs-text);
+  padding: 0.8rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  max-height: 220px;
 }
 
 input:focus {
@@ -80,10 +146,12 @@ button {
   background: var(--nfs-bg);
   color: var(--nfs-text);
   border-radius: 4px;
+  transition: border-color 120ms ease, background-color 120ms ease;
 }
 
 button:hover {
   border-color: var(--nfs-primary);
+  background: color-mix(in srgb, var(--nfs-bg-alt) 70%, var(--nfs-bg));
 }
 
 .actions {
@@ -104,12 +172,40 @@ table {
 th, td {
   text-align: left;
   border-bottom: 1px solid var(--nfs-border);
-  padding: 0.45rem 0.5rem;
+  padding: 0.3rem 0.45rem;
   vertical-align: top;
+}
+
+#managed-table th,
+#managed-table td,
+#exports-table th,
+#exports-table td {
+  padding: 0.22rem 0.4rem !important;
+  line-height: 1.2 !important;
+  font-weight: 400 !important;
+  font-size: 0.9rem !important;
+}
+
+html#nfs-page table.table > thead > tr > th,
+html#nfs-page table.table > tbody > tr > td,
+html#nfs-page #managed-table > thead > tr > th,
+html#nfs-page #managed-table > tbody > tr > td,
+html#nfs-page #exports-table > thead > tr > th,
+html#nfs-page #exports-table > tbody > tr > td {
+  padding: 0.2rem 0.38rem !important;
+  line-height: 1.15 !important;
+  font-weight: 400 !important;
+  font-size: 0.88rem !important;
 }
 
 thead th {
   color: var(--nfs-muted);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--nfs-bg) 92%, var(--nfs-text) 8%);
+}
+
+tbody tr:hover {
+  background: color-mix(in srgb, var(--nfs-bg-alt) 70%, var(--nfs-bg) 30%);
 }
 
 code {
@@ -117,8 +213,70 @@ code {
   color: var(--nfs-text);
 }
 
+#managed-table td code,
+#exports-table td code {
+  color: var(--nfs-text) !important;
+  background: color-mix(in srgb, var(--nfs-bg) 78%, var(--nfs-bg-alt) 22%) !important;
+  border: 1px solid var(--nfs-border) !important;
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  display: inline-block;
+  line-height: 1.25;
+  font-weight: 500 !important;
+}
+
 @media (max-width: 900px) {
+  .nfs-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   #add-form {
     grid-template-columns: 1fr;
   }
+}
+
+/* Cockpit hard-overrides: keep module in host theme */
+html#nfs-page,
+html#nfs-page body {
+  background: var(--nfs-bg) !important;
+  color: var(--nfs-text) !important;
+}
+
+html#nfs-page .nfs-page,
+html#nfs-page .panel,
+html#nfs-page .table-wrap,
+html#nfs-page pre {
+  background: var(--nfs-bg-alt) !important;
+  color: var(--nfs-text) !important;
+  border-color: var(--nfs-border) !important;
+}
+
+html#nfs-page table,
+html#nfs-page thead,
+html#nfs-page tbody,
+html#nfs-page tr,
+html#nfs-page th,
+html#nfs-page td {
+  background-color: transparent !important;
+  color: var(--nfs-text) !important;
+  border-color: var(--nfs-border) !important;
+}
+
+html#nfs-page thead th {
+  background-color: color-mix(in srgb, var(--nfs-bg-alt) 88%, var(--nfs-text) 12%) !important;
+  color: var(--nfs-muted) !important;
+}
+
+html#nfs-page tbody tr:hover td {
+  background-color: color-mix(in srgb, var(--nfs-bg-alt) 72%, var(--nfs-bg) 28%) !important;
+}
+
+html#nfs-page button,
+html#nfs-page input,
+html#nfs-page select,
+html#nfs-page textarea {
+  background: var(--nfs-bg) !important;
+  color: var(--nfs-text) !important;
+  border-color: var(--nfs-border) !important;
 }

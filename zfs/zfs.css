@@ -830,8 +830,8 @@ tbody > tr.listing-ct-item-snapshots {
     --color-gray-12: #1e1e1e;
 
     /* Semantic colors (bind to Cockpit theme) */
-    --color-fg: var(--ct-color-text, var(--pf-global--Color--100, #151515));
-    --color-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
+    --color-fg: var(--pf-global--Color--100, #151515);
+    --color-bg: var(--pf-global--BackgroundColor--100, #fff);
     --color-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
 
     --color-link: #0066cc;
@@ -848,7 +848,7 @@ tbody > tr.listing-ct-item-snapshots {
     --color-body-copy: var(--ct-color-text, #151515);
     --color-body-copy-dark: #cccccc;
     --color-body-copy-dark-color: rbga(255,255,255,0.8);
-    --color-subtle-copy: #72767b;
+    --color-subtle-copy: var(--pf-global--Color--200, #72767b);
     --color-subtle-text-dark: #cccccc;
 
     --color-alert-success-bg: #ffffff;
@@ -1635,7 +1635,7 @@ tbody.open > tr.listing-ct-panel {
     }
 
 tbody.open td div.listing-ct-head {
-    background-color: #fff;
+    background-color: var(--color-bg);
 }
 
 tbody.open > .listing-ct-panel > td > .listing-ct-body {
@@ -1807,7 +1807,7 @@ div.listing-ct-head {
 
 div.listing-ct-maybe div.listing-ct-head,
 div.listing-ct-maybe div.listing-ct-body {
-    background-color: #fff;
+    background-color: var(--color-bg);
     border: none;
 }
 
@@ -1864,14 +1864,14 @@ tbody.active .listing-ct-head {
 
 .listing-ct-head dd {
     display: inline;
-    color: black;
+    color: var(--color-text);
 }
 
 .listing-ct-body {
     /* Modified for Cockpit ZFS Manager - Original: padding: 1rem 1.5rem; */
     padding: 0px;
     border: 1px solid var(--color-light-gray);
-    background-color: #fff;
+    background-color: var(--color-bg);
 }
 
 .listing-ct-inline > td > .listing-ct-body {
@@ -2071,7 +2071,7 @@ tbody.open tr.listing-ct-head {
     border-style: solid;
     border-width: 1px 1px 0 1px;
     border-top: 3px solid var(--color-link);
-    background-color: #f5f5f5;
+    background-color: var(--zfs-bg-alt, var(--color-bg));
 }
 
 tr.listing-ct-head + tr.listing-ct-head {
@@ -3043,8 +3043,8 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --color-gray-10: #464646;
     --color-gray-11: #323232;
     --color-gray-12: #1e1e1e;
-    --color-fg: #151515;
-    --color-bg: #fff;
+    --color-fg: var(--pf-global--Color--100, #151515);
+    --color-bg: var(--pf-global--BackgroundColor--100, #fff);
     --color-text: var(--color-fg);
     --color-link: #06c;
     --color-link-visited: #06c;
@@ -3054,12 +3054,12 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --color-link-visited-dark: #73bcf7;
     --color-link-hover-dark: #2b9af3;
     --color-link-focus-dark: #2b9af3;
-    --color-heading: #151515;
+    --color-heading: var(--ct-color-text, #151515);
     --color-heading-dark: #fff;
-    --color-body-copy: #151515;
+    --color-body-copy: var(--ct-color-text, #151515);
     --color-body-copy-dark: #ccc;
     --color-body-copy-dark-color: rbga(255, 255, 255, 0.8);
-    --color-subtle-copy: #72767b;
+    --color-subtle-copy: var(--pf-global--Color--200, #72767b);
     --color-subtle-text-dark: #ccc;
     --color-alert-success-bg: #fff;
     --color-alert-sucess-icon: #92d400;
@@ -5805,11 +5805,11 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --pf-global--palette--red-300: #7d1007;
     --pf-global--palette--red-400: #470000;
     --pf-global--palette--red-500: #2c0000;
-    --pf-global--palette--white: #fff;
-    --pf-global--BackgroundColor--100: #fff;
-    --pf-global--BackgroundColor--150: #f5f5f5;
-    --pf-global--BackgroundColor--200: #fafafa;
-    --pf-global--BackgroundColor--300: #ededed;
+    --pf-global--palette--white: var(--ct-color-bg, #fff);
+    --pf-global--BackgroundColor--100: var(--pf-v5-global--BackgroundColor--100, var(--pf-global--BackgroundColor--dark-100));
+    --pf-global--BackgroundColor--150: var(--ct-color-subtle, #f5f5f5);
+    --pf-global--BackgroundColor--200: var(--ct-color-subtle, #fafafa);
+    --pf-global--BackgroundColor--300: var(--ct-color-subtle, #ededed);
     --pf-global--BackgroundColor--light-100: #fff;
     --pf-global--BackgroundColor--light-200: #fafafa;
     --pf-global--BackgroundColor--light-300: #ededed;
@@ -5819,8 +5819,8 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --pf-global--BackgroundColor--dark-400: #4f5255;
     --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
     --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
-    --pf-global--Color--100: #151515;
-    --pf-global--Color--200: #737679;
+    --pf-global--Color--100: var(--pf-v5-global--Color--100, var(--pf-global--Color--dark-100));
+    --pf-global--Color--200: var(--ct-color-label, #737679);
     --pf-global--Color--300: #3c3f42;
     --pf-global--Color--400: #8a8d90;
     --pf-global--Color--light-100: #fff;
@@ -5835,7 +5835,7 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --pf-global--disabled-color--100: #737679;
     --pf-global--disabled-color--200: #d2d2d2;
     --pf-global--disabled-color--300: #ededed;
-    --pf-global--primary-color--100: #06c;
+    --pf-global--primary-color--100: var(--pf-v5-global--primary-color--100, #06c);
     --pf-global--primary-color--200: #004080;
     --pf-global--primary-color--light-100: #73bcf7;
     --pf-global--primary-color--dark-100: #06c;
@@ -5905,7 +5905,7 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     --pf-global--BorderWidth--sm: 1px;
     --pf-global--BorderWidth--md: 2px;
     --pf-global--BorderWidth--lg: 3px;
-    --pf-global--BorderColor--100: #d2d2d2;
+    --pf-global--BorderColor--100: var(--pf-v5-global--BorderColor--100, var(--pf-global--BorderColor--dark-100));
     --pf-global--BorderColor--200: #8a8d90;
     --pf-global--BorderColor--300: #ededed;
     --pf-global--BorderColor--dark-100: #d2d2d2;
@@ -7166,57 +7166,252 @@ pf-c-empty-state .pf-c-button.pf-m-primary.slim {
     margin: 0
 }
 
-/* Cockpit theme bridge: follow global Cockpit light/dark colors */
-:root {
-    --zfs-bg: var(--ct-color-bg, var(--pf-global--BackgroundColor--100, #fff));
-    --zfs-bg-alt: var(--ct-color-subtle, var(--pf-global--BackgroundColor--200, #f5f5f5));
-    --zfs-text: var(--ct-color-text, var(--pf-global--Color--100, #151515));
-    --zfs-muted: var(--ct-color-label, var(--pf-global--Color--200, #6a6e73));
-    --zfs-border: var(--ct-color-border, var(--pf-global--BorderColor--100, #d2d2d2));
+/* Force old upstream semantic vars to Cockpit theme tokens (old build fallback) */
+:root,
+:root.pf-theme-dark,
+:root.pf-theme-light,
+:root.pf-t-dark,
+:root.pf-t-light {
+    --color-fg: var(--ct-color-text, var(--pf-v5-global--Color--100, var(--pf-global--Color--100))) !important;
+    --color-text: var(--ct-color-text, var(--pf-v5-global--Color--100, var(--pf-global--Color--100))) !important;
+    --color-bg: var(--ct-color-bg, var(--pf-v5-global--BackgroundColor--100, var(--pf-global--BackgroundColor--100))) !important;
+    --color-heading: var(--ct-color-text, var(--pf-v5-global--Color--100, var(--pf-global--Color--100))) !important;
+    --color-body-copy: var(--ct-color-text, var(--pf-v5-global--Color--100, var(--pf-global--Color--100))) !important;
+    --color-subtle-copy: var(--ct-color-label, var(--pf-v5-global--Color--200, var(--pf-global--Color--200))) !important;
+    --color-border: var(--ct-color-border, var(--pf-v5-global--BorderColor--100, var(--pf-global--BorderColor--100))) !important;
 }
 
-html.pf-theme-dark {
-    --zfs-bg: #151515;
-    --zfs-bg-alt: #212427;
-    --zfs-text: #f0f0f0;
-    --zfs-muted: #b8bbbe;
-    --zfs-border: #3c3f42;
+/* Modernized layout only (colors come from Cockpit theme) */
+#container > div > section.ct-listing > header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    padding: 0.8rem 1rem !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 10px 10px 0 0 !important;
 }
 
-body {
-    background: var(--zfs-bg);
-    color: var(--zfs-text);
+#container > div > section.ct-listing > header h3.listing-ct-heading {
+    margin: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    color: var(--color-text) !important;
+    background: transparent !important;
+    text-shadow: none !important;
 }
 
-.ct-listing,
-.listing-ct,
-.listing-ct > tbody > tr,
-.panel,
-.modal-content {
-    background: var(--zfs-bg);
-    color: var(--zfs-text);
+#container .listing-ct-actions .btn {
+    border-radius: 7px !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: none !important;
+    transition: border-color 120ms ease !important;
 }
 
-.ct-listing > header,
-.panel-heading,
-.listing-ct-head,
-.listing-ct-body,
-.table > thead > tr > th,
-.table > tbody > tr > td {
-    border-color: var(--zfs-border);
+#table-storagepools.listing {
+    border: 1px solid var(--color-border) !important;
+    border-top: 0 !important;
+    border-radius: 0 0 10px 10px !important;
+    overflow: visible !important;
 }
 
-.text-muted,
-.table-ct-head,
-.modal-title,
-.listing-ct .listing-ct-body .listing-ct-head {
-    color: var(--zfs-muted) !important;
+#table-storagepools.listing thead tr th {
+    font-weight: 600 !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    background-color: color-mix(in srgb, var(--color-bg) 92%, var(--color-text) 8%) !important;
+    color: var(--color-subtle-copy) !important;
 }
 
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-    background: var(--zfs-bg-alt);
-    color: var(--zfs-text);
-    border-color: var(--zfs-border);
+#table-storagepools.listing tbody tr td {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent) !important;
+}
+
+#table-storagepools.listing tbody tr td,
+#table-storagepools.listing tbody tr th,
+#table-storagepools.listing tbody tr td a {
+    color: var(--color-text) !important;
+    background-color: var(--zfs-bg-alt, var(--color-bg)) !important;
+}
+
+#table-storagepools.listing tbody tr td span.pficon-ok {
+    color: #3e8635 !important;
+}
+
+#table-storagepools.listing tbody tr td span.pficon-warning-triangle-o {
+    color: #f0ab00 !important;
+}
+
+#table-storagepools.listing tbody tr td span.pficon-error-circle-o {
+    color: #c9190b !important;
+}
+
+#table-storagepools.listing tbody tr:hover td:not(.listing-ct-actionsmenu):not(:has(.btn)) {
+    outline: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent) !important;
+    outline-offset: -1px !important;
+    background-color: color-mix(in srgb, var(--zfs-bg-alt, var(--color-bg)) 85%, var(--color-text) 15%) !important;
+}
+
+#table-storagepools.listing tbody tr:hover td:has(.btn),
+#table-storagepools.listing tbody tr:hover td.listing-ct-actionsmenu {
+    background-color: var(--zfs-bg-alt, var(--color-bg)) !important;
+    outline: none !important;
+}
+
+#table-storagepools.listing tbody tr:hover td > .table-ct-text,
+#table-storagepools.listing tbody tr:hover td > span,
+#table-storagepools.listing tbody tr:hover td > a,
+#table-storagepools.listing tbody tr:hover td .table-ct-head {
+    color: var(--color-text) !important;
+}
+
+#table-storagepools.listing tbody tr:hover td .dropdown-menu a,
+#table-storagepools.listing tbody tr:hover td .dropdown-menu li a {
+    color: var(--color-text) !important;
+    background-color: transparent !important;
+}
+
+#table-storagepools.listing thead tr th,
+#table-storagepools.listing thead tr th * {
+    color: var(--color-subtle-copy) !important;
+}
+
+#table-storagepools .btn.btn-default,
+#table-storagepools .btn.btn-default:hover,
+#table-storagepools .btn.btn-default:focus,
+#table-storagepools .btn.btn-default:active,
+#table-storagepools [id^=btn-storagepool-filesystems-refresh-].btn,
+#table-storagepools [id^=btn-storagepool-filesystems-refresh-].btn:hover,
+#table-storagepools [id^=btn-storagepool-filesystems-refresh-].btn:focus,
+#table-storagepools [id^=btn-storagepool-snapshots-refresh-].btn,
+#table-storagepools [id^=btn-storagepool-snapshots-refresh-].btn:hover,
+#table-storagepools [id^=btn-storagepool-snapshots-refresh-].btn:focus,
+#table-storagepools [id^=btn-storagepool-status-refresh-].btn,
+#table-storagepools [id^=btn-storagepool-status-refresh-].btn:hover,
+#table-storagepools [id^=btn-storagepool-status-refresh-].btn:focus {
+    color: var(--pf-global--primary-color--100) !important;
+    background-color: var(--color-bg) !important;
+    border-color: var(--pf-global--primary-color--100) !important;
+    box-shadow: none !important;
+}
+
+#table-storagepools .btn.btn-primary,
+#table-storagepools .btn.btn-primary:hover,
+#table-storagepools .btn.btn-primary:focus,
+#table-storagepools .btn.btn-primary:active,
+#table-storagepools [id^=btn-storagepool-filesystems-create-].btn,
+#table-storagepools [id^=btn-storagepool-filesystems-create-].btn:hover,
+#table-storagepools [id^=btn-storagepool-filesystems-create-].btn:focus,
+#table-storagepools [id^=btn-storagepool-snapshots-create-].btn,
+#table-storagepools [id^=btn-storagepool-snapshots-create-].btn:hover,
+#table-storagepools [id^=btn-storagepool-snapshots-create-].btn:focus {
+    color: #fff !important;
+    background-color: var(--pf-global--primary-color--100) !important;
+    border-color: var(--pf-global--primary-color--100) !important;
+    box-shadow: none !important;
+}
+
+/* Row hover must not recolor all detail toolbar buttons */
+#table-storagepools tbody tr:hover [id^=btn-storagepool-filesystems-],
+#table-storagepools tbody tr:hover [id^=btn-storagepool-snapshots-],
+#table-storagepools tbody tr:hover [id^=btn-storagepool-status-] {
+    filter: none !important;
+    opacity: 1 !important;
+}
+
+/* Detail view buttons: default like top menu */
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default,
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:hover,
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:focus,
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:active,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:hover,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:focus,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:active,
+#table-storagepools [id^=btn-storagepool-status-].btn.btn-default {
+    color: var(--color-text) !important;
+    background-color: #7b8088 !important;
+    border-color: #8b9098 !important;
+    box-shadow: none !important;
+}
+
+#table-storagepools tbody tr:hover [id^=btn-storagepool-filesystems-].btn.btn-default:not(:hover):not(:focus):not(:active),
+#table-storagepools tbody tr:hover [id^=btn-storagepool-snapshots-].btn.btn-default:not(:hover):not(:focus):not(:active),
+#table-storagepools tbody tr:hover [id^=btn-storagepool-status-].btn.btn-default:not(:hover):not(:focus):not(:active) {
+    color: var(--color-text) !important;
+    background-color: #7b8088 !important;
+    border-color: #8b9098 !important;
+}
+
+/* Only directly selected/hovered detail button goes dark-gray (never black) */
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:hover,
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:focus,
+#table-storagepools [id^=btn-storagepool-filesystems-].btn.btn-default:active,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:hover,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:focus,
+#table-storagepools [id^=btn-storagepool-snapshots-].btn.btn-default:active,
+#table-storagepools [id^=btn-storagepool-status-].btn.btn-default:hover,
+#table-storagepools [id^=btn-storagepool-status-].btn.btn-default:focus,
+#table-storagepools [id^=btn-storagepool-status-].btn.btn-default:active,
+#table-storagepools .btn-group.open > [id^=btn-storagepool-status-].btn.btn-default,
+#table-storagepools .btn-group.open > .dropdown-toggle.btn-default {
+    background-color: #4b4f54 !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+}
+
+#table-storagepools [id^=btn-storagepool-filesystems-],
+#table-storagepools [id^=btn-storagepool-filesystems-]:hover,
+#table-storagepools [id^=btn-storagepool-filesystems-]:focus,
+#table-storagepools [id^=btn-storagepool-snapshots-],
+#table-storagepools [id^=btn-storagepool-snapshots-]:hover,
+#table-storagepools [id^=btn-storagepool-snapshots-]:focus,
+#table-storagepools [id^=btn-storagepool-status-],
+#table-storagepools [id^=btn-storagepool-status-]:hover,
+#table-storagepools [id^=btn-storagepool-status-]:focus {
+    filter: none !important;
+    opacity: 1 !important;
+}
+
+.dropdown-menu {
+    border-radius: 8px !important;
+    border: 1px solid var(--color-border) !important;
+    background-color: var(--zfs-bg-alt, var(--color-bg)) !important;
+    color: var(--color-text) !important;
+}
+
+#table-storagepools .dropdown-menu > li > a,
+#table-storagepools .dropdown-menu > li > a:hover,
+#table-storagepools .dropdown-menu > li > a:focus,
+#table-storagepools .dropdown-menu a,
+#table-storagepools .dropdown-menu a:hover,
+#table-storagepools .dropdown-menu a:focus {
+    color: var(--color-text) !important;
+    background-color: transparent !important;
+}
+
+#table-storagepools .dropdown-menu > li > a:hover,
+#table-storagepools .dropdown-menu > li > a:focus {
+    background-color: color-mix(in srgb, var(--zfs-bg-alt, var(--color-bg)) 70%, var(--color-text) 30%) !important;
+}
+
+/* Theme-correct text/background mapping for table readability */
+:root.pf-theme-dark,
+:root.pf-v5-theme-dark,
+:root.ct-theme-dark {
+    --color-bg: var(--pf-global--BackgroundColor--dark-100) !important;
+    --zfs-bg-alt: var(--pf-global--BackgroundColor--dark-200) !important;
+    --color-text: var(--pf-global--Color--light-100) !important;
+    --color-fg: var(--pf-global--Color--light-100) !important;
+    --color-subtle-copy: var(--pf-global--Color--light-200) !important;
+}
+
+:root.pf-theme-light,
+:root.pf-v5-theme-light,
+:root.ct-theme-light {
+    --color-bg: var(--pf-global--BackgroundColor--light-100) !important;
+    --zfs-bg-alt: var(--pf-global--BackgroundColor--light-200) !important;
+    --color-text: var(--pf-global--Color--dark-100) !important;
+    --color-fg: var(--pf-global--Color--dark-100) !important;
+    --color-subtle-copy: var(--pf-global--Color--dark-200) !important;
 }

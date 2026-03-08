@@ -1,21 +1,19 @@
-# Developing the Storage Suite (ZFS + NFS + SMB)
+# Developing Cockpit Storage Suite (Alpha)
 
-## Module Structure
+## Scope
 
-- `zfs/` existing module
-- `nfs/` new module scaffold
-- `smb/` new module scaffold
+- `zfs/`
+- `nfs/`
+- `smb/`
 
-Each module is a cockpit package directory with:
+## Principles
 
-- `manifest.json`
-- `index.html`
-- `<module>.js`
-- `<module>.css`
+1. Keep module behavior predictable.
+2. Keep managed writes explicit and limited.
+3. Keep external configs visible as read-only.
+4. Keep UI aligned with Cockpit theme.
 
-## Local Install for Testing
-
-From repo root:
+## Local test install
 
 ```bash
 sudo cp -r zfs /usr/share/cockpit/
@@ -24,19 +22,9 @@ sudo cp -r smb /usr/share/cockpit/
 sudo systemctl restart cockpit
 ```
 
-## Current Focus
+## Review checklist
 
-1. Keep ZFS module compatible with current cockpit APIs.
-2. Build first functional NFS management actions:
-   - export list
-   - export add/edit/remove
-3. Build first functional SMB management actions:
-   - share list
-   - share add/edit/remove
-   - `paperless/consume` quick-share template
-
-## Safety Rules
-
-- Never write firewall/policy logic here.
-- Validate command exit codes and show errors in UI.
-- Keep root-required actions explicit.
+- No hardcoded secrets.
+- No firewall/policy logic.
+- No destructive write outside managed files.
+- Theme readable in dark and light mode.

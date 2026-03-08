@@ -1,134 +1,69 @@
-# Cockpit ZFS Manager
+# Cockpit Storage Suite (Alpha)
 
-[![GitHub Tag](https://img.shields.io/github/v/release/optimans/cockpit-zfs-manager?include_prereleases&style=flat-square&color=brightgreen)](https://github.com/optimans/cockpit-zfs-manager/releases)
+PlanetOnyx fork of Cockpit storage modules:
 
-**An interactive ZFS on Linux admin package for Cockpit.**
+- `zfs` (pool/filesystem/snapshot management)
+- `nfs` (export management)
+- `smb` (share management)
 
-Use of this software is at your risk!
+Status: **ALPHA**
 
-## PlanetOnyx Continuation Scope
+This release is focused on:
 
-This fork is being continued as a modular storage cockpit package with three
-workstreams:
+- Cockpit theme integration
+- UI/UX stabilization
+- safe managed config writes
+- visibility of external (read-only) NFS/SMB entries
 
-- `zfs` (existing module, compatibility hardening)
-- `nfs` (new module scaffold)
-- `smb` (new module scaffold)
+## Versioning
 
-The immediate goal is to restore reliable operation on current Cockpit releases
-without breaking existing ZFS functionality.
+Current alpha line:
 
-## Upstream Strategy (Active Base)
-
-This continuation now follows an upstream-first approach:
-
-- `45Drives/cockpit-file-sharing` as the active NFS/SMB reference base
-- `45Drives/cockpit-zfs-manager` as the maintained ZFS reference base
-
-The old EOL line remains only as compatibility fallback during transition.
-New work should prefer active upstream components and keep local glue code
-minimal and reviewable.
+- `v0.1.0-alpha.1`
 
 ## Requirements
 
- * Cockpit: 201+
- * NFS (Optional)
- * Samba: 4+ (Optional)
- * ZFS: 0.8+
+- Cockpit 287+
+- ZFS 0.8+
+- NFS server (optional)
+- Samba 4+ (optional)
 
-## Installation
-
-Copy zfs folder to cockpit
+## Install (manual)
 
 ```bash
-$ git clone https://github.com/optimans/cockpit-zfs-manager.git
-$ sudo cp -r cockpit-zfs-manager/zfs /usr/share/cockpit
+sudo cp -r zfs /usr/share/cockpit/
+sudo cp -r nfs /usr/share/cockpit/
+sudo cp -r smb /usr/share/cockpit/
+sudo systemctl restart cockpit
 ```
 
-#### Samba
+## Module behavior
 
-Auto generated snapshot names are created in YYYY.MM.DD-HH.MM.SS format.
+### ZFS
 
-It is recommended to add the following properties to the Samba configuration file to allow access to Previous Versions in Windows Explorer:
+- keeps core upstream workflow
+- theme-compatible UI overrides for modern Cockpit
+- SMART handling is host-dependent (LXC hosts may be limited)
 
-```bash
-$ sudo nano /etc/samba/smb.conf
-```
+### NFS
 
-Append to [global] section or individual share sections
+- managed file writing
+- active export state rendering
+- external entries shown read-only when not managed by module
 
-```
-shadow: snapdir = .zfs/snapshot
-shadow: sort = desc
-shadow: format = %Y.%m.%d-%H.%M.%S
-shadow: localtime = yes	
-vfs objects = acl_xattr shadow_copy2
-```
+### SMB
 
-#### SELinux
+- managed file writing
+- active share state rendering
+- external entries shown read-only when not managed by module
 
-If using SELinux in enforcing mode, it is recommended to enable the boolean states for Samba:
+## Safety
 
-```bash
-$ sudo setsebool -P samba_export_all_ro=1 samba_export_all_rw=1
-```
+- No firewall/policy automation in this project.
+- Root-required actions remain explicit in code.
+- Managed writes are limited to module-owned paths.
 
-## Using Cockpit ZFS Manager
+## Alpha note
 
-Login to Cockpit as an administrative user and click ZFS from the navigation list.
-
-A Welcome to Cockpit ZFS Manager modal will display and allow you to configure initial settings.
-
-## Caveats
-
-#### Storage Pools
-
-New storage pools are created with the following properties set (not visible in Create Storage Pool modal):
-
- * aclinherit=passthrough
- * acltype=posixacl
- * casesensitivity=sensitive
- * normalization=formD
- * sharenfs=off
- * sharesmb=off
- * utf8only=on
- * xattr=sa
-
-#### File Systems
-
-New file systems are created with the following properties set (not visible in Create File System modal):
-
- * normalization=formD
- * utf8only=on
-
-Passphrase is currently supported for encrypted file systems.
-
-If SELinux contexts for Samba is selected, the following properties are set:
-
- * context=system_u:object_r:samba_share_t:s0
- * fscontext=system_u:object_r:samba_share_t:s0
- * defcontext=system_u:object_r:samba_share_t:s0
- * rootcontext=system_u:object_r:samba_share_t:s0
-
-#### Samba
-
-ZFS always creates shares in /var/lib/samba/usershares folder when ShareSMB property is enabled. This is also the case even if Cockpit ZFS Manager is managing the shares. To avoid duplicate shares of the same file system, it is recommended to configure a different usershares folder path if required or to disable usershares in the Samba configuration file.
-
-Note: Newer versions of Samba may require the usershares folder to be set to a new path instead of disabled in configuration:
-
-```bash
-$ sudo mkdir /var/lib/samba/usershares2
-$ sudo nano /etc/samba/smb.conf
-```
-
-Append/Change to [global] section
-
-```
-usershare path = /var/lib/samba/usershares2
-```
-
-If enabled, Cockpit ZFS Manager manages shares for the file systems only. Samba global configuration will need to be configured externally.
-
-## Guides
-
- * [Red Hat Enterprise Linux 8 as an Active Directory Domain Services (AD DS) Member](guides/Red-Hat-Enterprise-Linux-8.md)
+This is an alpha build. Some UI details and edge cases are still being refined.
+Use in controlled environments first.
